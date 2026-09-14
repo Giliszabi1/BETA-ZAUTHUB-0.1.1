@@ -1,0 +1,26 @@
+{
+  "name": "zauthub-backend",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "main": "node -r dotenv/config src/server.js dotenv_config_path=env/local.env"
+  },
+  "devDependencies": {
+    
+  },
+  "dependencies": {
+	"dotenv": "^17.4.2",
+    "child_process": "^1.0.2",
+    "chokidar": "^5.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "joi": "^18.2.8",
+    "mysql2": "^3.24.3"
+  }
+}

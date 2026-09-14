@@ -1,0 +1,51 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker Compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+
+name: Zauthub
+services:
+  server:
+    build:
+      context: ./backend
+    container_name: Zauthub_backend
+    environment:
+      NODE_ENV: production
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: Zauthub_db
+      DB_USER: Zauthub
+      DB_PASSWORD: Zauthub
+    ports:
+      - 3000:3000
+    command: npm run main
+    depends_on:
+      - mysql
+      
+  mysql:
+    image: mysql:8.4
+
+    container_name: Zauthub_mysql
+
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: Zauthub_db
+      MYSQL_USER: Zauthub
+      MYSQL_PASSWORD: Zauthub
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+
+volumes:
+  mysql_data:
