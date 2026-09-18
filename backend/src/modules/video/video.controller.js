@@ -7,6 +7,7 @@ class VideoController {
         this.getVideos = this.getVideos.bind(this);
         this.getVideoById = this.getVideoById.bind(this);
         this.VideoSearchTo = this.VideoSearchTo.bind(this);
+        this.deleteVideoByYid = this.deleteVideoByYid.bind(this);
 
     }
 
@@ -58,6 +59,17 @@ class VideoController {
           }),
         );
       }
+    }
+    async deleteVideoByYid(req, res, next) {
+      const video_id = req.query.video_id;
+
+      if(!video_id){
+        res.send(JSON.stringify({success: false}));
+        return;
+      }
+      const result = await this.VideoService.deleteVideoByYid({video_id})
+
+      res.send(JSON.stringify({success: result.success, data: "deleted"}));
     }
 
 

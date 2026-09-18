@@ -28,12 +28,26 @@ class VideoRepository {
                 answer: answer[0][0]
             }
         } catch (error) {
+            console.log("Error: " +error)
             return {
                 success: false,
                 error: error
             }
         }
-        
+    }
+    async deleteVideoByYid({video_id}) {
+        try {
+            const [answer] = await DB_CONNECT.query("CALL deleteVideo(?);", [video_id]);
+            return {
+                success: true,
+                answer: answer
+            }
+        } catch (error) {
+            return {
+                success: false,
+                error: error
+            }
+        }
     }
 }
 

@@ -33,6 +33,69 @@ DELIMITER $$
 --
 
 
+DROP PROCEDURE IF EXISTS `deleteVideo`$$
+CREATE PROCEDURE `deleteVideo` (
+    IN `p_y_video_id` VARCHAR(255)
+)
+BEGIN
+    DECLARE v_video_id INT DEFAULT NULL;
+
+    /*
+     * 1. Videó ID megkeresése
+     */
+    SELECT id
+    INTO v_video_id
+    FROM video
+    WHERE y_video_id = p_y_video_id
+    LIMIT 1;
+
+    /*
+     * 2. Ha nincs ilyen videó
+     */
+    IF v_video_id IS NULL THEN
+
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'A megadott YouTube video nem található';
+
+    ELSE
+        DELETE t
+        FROM tags t
+        INNER JOIN video_tags vt
+            ON vt.tags_id = t.id
+        WHERE vt.video_id = v_video_id
+          AND NOT EXISTS (
+              SELECT 1
+              FROM channel_tags ct
+              WHERE ct.tags_id = t.id
+          )
+          AND NOT EXISTS (
+              SELECT 1
+              FROM video_tags vt2
+              WHERE vt2.tags_id = t.id
+                AND vt2.video_id <> v_video_id
+          );
+
+        DELETE FROM video_tags
+        WHERE video_id = v_video_id;
+
+
+        DELETE FROM chapters
+        WHERE video_id = v_video_id;
+
+        DELETE FROM video
+        WHERE id = v_video_id;
+
+        SELECT
+            v_video_id AS video_id,
+            p_y_video_id AS youtube_id,
+            'Video, chapters, video_tags and unused tags deleted permanently'
+                AS message;
+
+    END IF;
+
+END$$
+
+
 DROP PROCEDURE IF EXISTS `updateExpiredVideo`$$ 
 CREATE PROCEDURE `updateExpiredVideo` 
 ( 
@@ -484,6 +547,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `selectVideos` (IN `p_videoTypes` VA
     SELECT
         v.id AS video_id,
         v.y_video_id,
+        v.video_url,
+        v.audio_url,
         v.title AS video_title,
         v.view_count,
         v.upload_date,

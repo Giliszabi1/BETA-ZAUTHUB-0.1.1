@@ -137,6 +137,13 @@ class videoService {
             });
         });
     }
+
+    
+    async deleteVideoByYid({video_id}) {
+        const deletedMessage = await VideoRepository.deleteVideoByYid({video_id});
+
+        return deletedMessage.success;
+    }
 }
 
 module.exports = videoService;
